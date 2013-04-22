@@ -45,11 +45,14 @@ public interface MutableTypedMap<K> extends TypedMap<K> {
 	/**
 	 * Sets the type of an entry so that it cannot be changed.
 	 * 
-	 * This allows for performing type consistency checks on future {@link #put(TypedObject, Object)} calls without
+	 * This allows for performing type consistency checks on future {@link #put(TypedKey, Object)} calls without
 	 * defining a value.
-	 * 
+	 *
 	 * @param <TT> the most specific type that can be requested for this value
-	 * @param key the new typed key
+	 * @param typedKey the typed key
+	 * @throws NullPointerException if the specified <code>typedKey</code> is null
+	 * @throws ClassCastException if the key corresponds to a value but the new key type does not match the value type
+	 *             or if the key is of an inappropriate type for this map
 	 */
 	<TT> void setType(@Nonnull TypedKey<TT, K> typedKey) throws NullPointerException, ClassCastException;
 

@@ -6,6 +6,30 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>jTyped</name>
 	<description>Generically Typed Objects using Guava's TypeToken</description>
+	<packaging>jar</packaging>
+	<url>https://github.com/karlkfi/jtyped</url>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>karlkfi</id>
+			<name>Karl Isenberg</name>
+			<email>karlkfi@yahoo.com</email>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-8</timezone>
+			<properties>
+				<picUrl>https://secure.gravatar.com/avatar/68716d0fcc7b110ef7d9fcfb78f302c8</picUrl>
+			</properties>
+		</developer>
+	</developers>
 	<scm>
 		<connection>scm:git:git@github.com:karlkfi/jtyped.git</connection>
 		<url>scm:git:git@github.com:karlkfi/jtyped.git</url>
@@ -18,11 +42,11 @@
 			<version>14.0.1</version>
 		</dependency>
 		<!--
-		<dependency>
+			<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
 			<version>1.0</version>
-		</dependency>
+			</dependency>
 		-->
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
@@ -36,6 +60,33 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.4.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<detectJavaApiLink>true</detectJavaApiLink>
+					<!--<detectLinks>true</detectLinks> -->
+					<encoding>UTF-8</encoding>
+					<links>
+						<link>http://docs.guava-libraries.googlecode.com/git-history/release/javadoc</link>
+						<link>http://jsr-305.googlecode.com/svn/trunk/javadoc</link>
+					</links>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
