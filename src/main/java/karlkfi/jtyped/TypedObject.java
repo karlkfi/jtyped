@@ -8,5 +8,5 @@ public interface TypedObject<T> {
 
 	@Nonnull
 	TypeToken<T> getType();
-	
+
 }

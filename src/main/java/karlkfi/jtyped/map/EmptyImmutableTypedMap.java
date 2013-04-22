@@ -4,14 +4,12 @@ import java.util.Map.Entry;
 
 import karlkfi.jtyped.TypedSupplier;
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 /**
  * TypedBiMap with no mappings.
- *
+ * 
  * @param <K> the key type
  */
 final class EmptyImmutableTypedMap<K> extends ImmutableTypedMap<K> {
@@ -38,12 +36,12 @@ final class EmptyImmutableTypedMap<K> extends ImmutableTypedMap<K> {
 	}
 
 	@Override
-	public <TT> boolean containsKey(TT key) {
+	public <TT> boolean containsKeyId(TT key) {
 		return false;
 	}
 
 	@Override
-	public <TT> boolean containsTypedKey(TypedKey<TT,? extends K> typedKey) {
+	public <TT> boolean containsTypedKey(TypedKey<TT, ? extends K> typedKey) {
 		return false;
 	}
 
@@ -53,47 +51,53 @@ final class EmptyImmutableTypedMap<K> extends ImmutableTypedMap<K> {
 	}
 
 	@Override
-	public <TT> boolean containsTypedValue(TypedSupplier<TT> valueSupplier) {
+	public <TT> boolean containsValueSupplier(TypedSupplier<TT> valueSupplier) {
 		return false;
 	}
 
 	@Override
-	public <TT> TT get(TypedKey<TT,? extends K> typedKey) throws EntryNotFoundException, ClassCastException {
+	public <TT> TT get(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException, ClassCastException {
 		throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
 	}
 
 	@Override
-	public <TT> TypedSupplier<TT> getSupplier(TypedKey<TT,? extends K> typedKey) throws EntryNotFoundException, ClassCastException {
+	public <TT> TypedSupplier<TT> getSupplier(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException,
+			ClassCastException {
 		throw new EntryNotFoundException("Value supplier does not exist for the key: " + typedKey);
 	}
 
 	@Override
-	public ImmutableSet<? extends Entry<? extends K, ? extends TypedSupplier<?>>> entrySet() {
-		return ImmutableSet.of();
-	}
-	
-	@Override
-	public ImmutableSet<? extends K> keySet() {
-		return ImmutableSet.of();
-	}
-	
-	@Override
-	public ImmutableSet<? extends TypedKey<?,? extends K>> typedKeySet() {
+	ImmutableSet<? extends Entry<? extends K, ? extends TypedSupplier<?>>> createEntrySet() {
 		return ImmutableSet.of();
 	}
 
 	@Override
-	public ImmutableCollection<?> values() {
-		return ImmutableList.of();
+	ImmutableSet<? extends K> createKeySet() {
+		return ImmutableSet.of();
 	}
 
 	@Override
-	public ImmutableCollection<? extends TypedSupplier<?>> valueSuppliers() {
-		return ImmutableList.of();
+	ImmutableSet<? extends TypedKey<?, ? extends K>> createTypedKeySet() {
+		return ImmutableSet.of();
+	}
+
+	@Override
+	ImmutableSet<?> createValues() {
+		return ImmutableSet.of();
+	}
+
+	@Override
+	ImmutableSet<? extends TypedSupplier<?>> createValueSuppliers() {
+		return ImmutableSet.of();
 	}
 
 	Object readResolve() {
 		return INSTANCE; // preserve singleton property
+	}
+
+	@Override
+	public String toString() {
+		return "ImmutableTypedMap.of()";
 	}
 
 }

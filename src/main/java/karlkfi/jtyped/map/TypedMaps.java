@@ -24,7 +24,7 @@ public final class TypedMaps {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * An implementation of {@link TypedMap#toString}.
 	 */
@@ -33,7 +33,7 @@ public final class TypedMaps {
 		STANDARD_JOINER.appendTo(sb, map.entrySet());
 		return sb.append('}').toString();
 	}
-	
+
 	/**
 	 * Returns best-effort-sized StringBuilder based on the given collection size.
 	 * 
@@ -43,7 +43,7 @@ public final class TypedMaps {
 		checkArgument(size >= 0, "size must be non-negative");
 		return new StringBuilder((int) Math.min(size * 8L, Ints.MAX_POWER_OF_TWO));
 	}
-	
+
 	static final MapJoiner STANDARD_JOINER = Joiner.on(", ").useForNull("null").withKeyValueSeparator("=");
 
 }

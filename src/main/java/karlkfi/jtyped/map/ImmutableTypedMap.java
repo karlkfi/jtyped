@@ -21,6 +21,9 @@ import com.google.common.reflect.TypeToken;
 
 /**
  * Immutable TypedMap that is backed by an {@link ImmutableMap}.
+ * 
+ * This implementation hopefully provides all of the friendliness of an ImmutableMap, despite the added complexity of a
+ * TypedMap.
  */
 public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 
@@ -116,7 +119,7 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 		 * allowed, and will cause {@link #build} to fail.
 		 */
 		public <TT> Builder<K> put(TypedKey<TT, K> key, TT value) {
-			builder.put(key.getKey(), IdentityTypedSupplier.create(key.getType(), value));
+			builder.put(key.getId(), IdentityTypedSupplier.create(key.getType(), value));
 			return this;
 		}
 
@@ -181,26 +184,45 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 		return delegate().isEmpty();
 	}
 
-	public <TT> boolean containsKey(TT key) {
+	public <TT> boolean containsKeyId(TT key) {
 		return delegate().containsKey(key);
 	}
 
+	/**
+	 * True for all typedKeys().contains(typedKey) and any typedKey assignable from a typedKey.
+	 */
 	public <TT> boolean containsTypedKey(TypedKey<TT, ? extends K> typedKey) {
-		// TODO Auto-generated method stub
-		return false;
+		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
+		if (valueSupplier == null) {
+			return false;
+		}
+		return typedKey.getType().isAssignableFrom(valueSupplier.getType());
 	}
 
+	/**
+	 * Equivalent to values().contains(value). {@code O(N)} runtime.
+	 */
 	public <TT> boolean containsValue(TT value) {
-		// TODO Auto-generated method stub
-		return false;
+		return values().contains(value);
 	}
 
-	public <TT> boolean containsTypedValue(TypedSupplier<TT> valueSupplier) {
+	public <TT> boolean containsValueSupplier(TypedSupplier<TT> valueSupplier) {
 		return delegate().containsValue(valueSupplier);
 	}
 
+	@Nonnull
+	public <TT> TT get(@Nonnull TypeToken<TT> type, @Nonnull K keyId) throws EntryNotFoundException, ClassCastException {
+		TypedSupplier<?> valueSupplier = delegate().get(keyId);
+		if (valueSupplier == null) {
+			throw new EntryNotFoundException("Value does not exist for the keyId: " + keyId);
+		}
+		TypedSupplier<TT> typedSupplier = checkValueType(type, valueSupplier);
+		return typedSupplier.get();
+	}
+
+	@Nonnull
 	public <TT> TT get(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException, ClassCastException {
-		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getKey());
+		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
 		if (valueSupplier == null) {
 			throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
 		}
@@ -208,9 +230,21 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 		return typedSupplier.get();
 	}
 
+	@Nonnull
+	public <TT> TypedSupplier<TT> getSupplier(@Nonnull TypeToken<TT> type, @Nonnull K keyId)
+			throws EntryNotFoundException, ClassCastException {
+		TypedSupplier<?> valueSupplier = delegate().get(keyId);
+		if (valueSupplier == null) {
+			throw new EntryNotFoundException("Value does not exist for the keyId: " + keyId);
+		}
+		TypedSupplier<TT> typedSupplier = checkValueType(type, valueSupplier);
+		return typedSupplier;
+	}
+
+	@Nonnull
 	public <TT> TypedSupplier<TT> getSupplier(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException,
 			ClassCastException {
-		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getKey());
+		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
 		if (valueSupplier == null) {
 			throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
 		}

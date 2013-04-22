@@ -1,6 +1,5 @@
 package karlkfi.jtyped;
 
-
 import javax.annotation.Nonnull;
 
 import com.google.common.base.Supplier;

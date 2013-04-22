@@ -9,8 +9,9 @@ import karlkfi.jtyped.TypedObject;
 import karlkfi.jtyped.TypedSupplier;
 
 /**
- * An object that maps typed keys to typed values. A map cannot contain duplicate keys; each key can map to at most one value.
- *
+ * An object that maps typed keys to typed values. A map cannot contain duplicate keys; each key can map to at most one
+ * value.
+ * 
  * @param <K> the key type
  */
 public interface MutableTypedMap<K> extends TypedMap<K> {
@@ -34,33 +35,38 @@ public interface MutableTypedMap<K> extends TypedMap<K> {
 	 *             or if the key is of an inappropriate type for this map
 	 */
 	@Nullable
-	<TT> TypedSupplier<TT> put(@Nonnull TypedKey<TT,K> typedKey, @Nonnull TT value) throws NullPointerException, ClassCastException;
-	
+	<TT> TypedSupplier<TT> put(@Nonnull TypedKey<TT, K> typedKey, @Nonnull TT value) throws NullPointerException,
+			ClassCastException;
+
 	@Nullable
-	<TT> TypedSupplier<TT> putSupplier(@Nonnull TypedKey<TT,K> typedKey, @Nonnull TypedSupplier<TT> valueSupplier) throws NullPointerException, ClassCastException;
-	
+	<TT> TypedSupplier<TT> putSupplier(@Nonnull TypedKey<TT, K> typedKey, @Nonnull TypedSupplier<TT> valueSupplier)
+			throws NullPointerException, ClassCastException;
+
 	/**
-	 * Sets the type of an entry so that it cannot be changed. 
+	 * Sets the type of an entry so that it cannot be changed.
 	 * 
-	 * This allows for performing type consistency checks on future {@link #put(TypedObject, Object)} calls without defining a value.
+	 * This allows for performing type consistency checks on future {@link #put(TypedObject, Object)} calls without
+	 * defining a value.
 	 * 
 	 * @param <TT> the most specific type that can be requested for this value
 	 * @param key the new typed key
 	 */
-	<TT> void setType(@Nonnull TypedKey<TT,K> typedKey) throws NullPointerException, ClassCastException;
-	
+	<TT> void setType(@Nonnull TypedKey<TT, K> typedKey) throws NullPointerException, ClassCastException;
+
 	@Nullable
 	<TT> TypedSupplier<TT> remove(@Nonnull TT typedKey);
-	
+
 	@Nullable
-	<TT> TypedSupplier<TT> removeTyped(@Nonnull TypedKey<TT,K> typedKey) throws NullPointerException, ClassCastException;
-	
+	<TT> TypedSupplier<TT> removeTyped(@Nonnull TypedKey<TT, K> typedKey) throws NullPointerException,
+			ClassCastException;
+
 	@Nullable
-	void putAll(@Nonnull Map<?,? extends TypedSupplier<?>> m) throws NullPointerException, IllegalArgumentException, ClassCastException;
-	
+	void putAll(@Nonnull Map<?, ? extends TypedSupplier<?>> m) throws NullPointerException, IllegalArgumentException,
+			ClassCastException;
+
 	/**
 	 * Removes all of the mappings from this map. The map will be empty after this call returns.
 	 */
 	void clear();
-	
+
 }
