@@ -6,6 +6,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>jTyped</name>
 	<description>Generically Typed Objects using Guava's TypeToken</description>
+	<scm>
+		<connection>scm:git:git@github.com:karlkfi/jtyped.git</connection>
+		<url>scm:git:git@github.com:karlkfi/jtyped.git</url>
+		<developerConnection>scm:git:git@github.com:karlkfi/jtyped.git</developerConnection>
+	</scm>
 	<dependencies>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -25,4 +30,13 @@
 			<version>2.0.1</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.4.1</version>
+			</plugin>
+		</plugins>
+	</build>
 </project>
