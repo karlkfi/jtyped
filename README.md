@@ -9,4 +9,4 @@ Licensing will be under Apache License, Version 2.0 when I get around to licensi
 http://www.apache.org/licenses/LICENSE-2.0.html
 
 For now assume:
-Copywrite Karl Isenberg (2013)
+Copyrite Karl Isenberg (2013)
