@@ -15,30 +15,33 @@
  ******************************************************************************/
 package karlkfi.jtyped;
 
+import javax.annotation.Nonnull;
+
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 
-public final class IdentityTypedSupplier<T> implements TypedSupplier<T> {
+public final class ImmutableTypedSupplier<V> implements TypedSupplier<V> {
 
-	private final TypeToken<T> type;
-	private final T value;
+	private final TypeToken<V> type;
+	private final V value;
 
-	IdentityTypedSupplier(TypeToken<T> type, T value) {
+	ImmutableTypedSupplier(@Nonnull TypeToken<V> type, V value) {
 		this.type = Preconditions.checkNotNull(type, "type is null");
-		this.value = Preconditions.checkNotNull(value, "value is null");
-		;
+		this.value = value;
 	}
 
-	public static <TT> IdentityTypedSupplier<TT> create(TypeToken<TT> type, TT value) {
-		return new IdentityTypedSupplier<TT>(type, value);
-	}
-
-	public TypeToken<T> getType() {
+	@Nonnull
+	public TypeToken<V> getType() {
 		return type;
 	}
 
-	public T get() {
+	public V get() {
 		return value;
+	}
+	
+	@Nonnull
+	public static <VV> ImmutableTypedSupplier<VV> create(@Nonnull TypeToken<VV> type, VV value) {
+		return new ImmutableTypedSupplier<VV>(type, value);
 	}
 
 }

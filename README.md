@@ -7,6 +7,6 @@ The initial purpose of this project is to explore the usefulness of a TypedMap t
 
 This project is licensed under Apache License, Version 2.0. 
 See LICENSE for details or http://www.apache.org/licenses/LICENSE-2.0.html
-Copyrite Karl Isenberg (2013)
+Copyright Karl Isenberg (2013)
 
 Any contributed work must be authorized by the copyright owner and be compatible with the License.

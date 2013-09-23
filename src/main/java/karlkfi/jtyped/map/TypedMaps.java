@@ -35,7 +35,7 @@ public final class TypedMaps {
 		}
 		if (object instanceof TypedMap) {
 			TypedMap<?> o = (TypedMap<?>) object;
-			return map.entrySet().equals(o.entrySet());
+			return map.entries().equals(o.entries());
 		}
 		return false;
 	}
@@ -45,7 +45,7 @@ public final class TypedMaps {
 	 */
 	static String toStringImpl(TypedMap<?> map) {
 		StringBuilder sb = newStringBuilderForCollection(map.size()).append('{');
-		STANDARD_JOINER.appendTo(sb, map.entrySet());
+		STANDARD_JOINER.appendTo(sb, map.entries());
 		return sb.append('}').toString();
 	}
 

@@ -22,33 +22,37 @@ import java.util.Map.Entry;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import karlkfi.jtyped.IdentityTypedSupplier;
+import karlkfi.jtyped.ImmutableTypedSupplier;
 import karlkfi.jtyped.TypedSupplier;
 
 import com.google.common.base.Function;
-import com.google.common.base.Supplier;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 
 /**
  * Immutable TypedMap that is backed by an {@link ImmutableMap}.
  * 
  * This implementation hopefully provides all of the friendliness of an ImmutableMap, despite the added complexity of a
- * TypedMap.
+ * TypedMap. 
+ * 
+ * Because values are stored as {@link TypedSupplier}s you can memoize them for cached performance.
+ * 
+ * Note that while keys are immutable values may not be and thus this map is only shallowly immutable.
+ * 
+ * @param <ID> the key ID type
  */
-public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
+public abstract class ImmutableTypedMap<ID> implements TypedMap<ID> {
 
 	/**
 	 * Returns the empty typed map.
 	 */
 	// Casting to any type is safe because the set will never hold any elements.
 	@SuppressWarnings("unchecked")
-	public static <KK> ImmutableTypedMap<KK> of() {
-		return (ImmutableTypedMap<KK>) EmptyImmutableTypedMap.INSTANCE;
+	public static <I> ImmutableTypedMap<I> of() {
+		return (ImmutableTypedMap<I>) EmptyImmutableTypedMap.INSTANCE;
 	}
 
 	/**
@@ -56,8 +60,8 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	 * {@link Collections#singletonMap} but will not accept a null key or value. It is preferable mainly for consistency
 	 * and maintainability of your code.
 	 */
-	public static <KK> ImmutableTypedMap<KK> of(KK k1, TypedSupplier<?> v1) {
-		return new RegularImmutableTypedMap<KK>(ImmutableMap.of(k1, v1));
+	public static <I> ImmutableTypedMap<I> of(I k1, TypedSupplier<?> v1) {
+		return new RegularImmutableTypedMap<I>(ImmutableMap.of(k1, v1));
 	}
 
 	/**
@@ -65,8 +69,8 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	 * 
 	 * @throws IllegalArgumentException if duplicate keys are provided
 	 */
-	public static <KK> ImmutableTypedMap<KK> of(KK k1, TypedSupplier<?> v1, KK k2, TypedSupplier<?> v2) {
-		return new RegularImmutableTypedMap<KK>(ImmutableMap.of(k1, v1, k2, v2));
+	public static <I> ImmutableTypedMap<I> of(I k1, TypedSupplier<?> v1, I k2, TypedSupplier<?> v2) {
+		return new RegularImmutableTypedMap<I>(ImmutableMap.of(k1, v1, k2, v2));
 	}
 
 	/**
@@ -74,9 +78,9 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	 * 
 	 * @throws IllegalArgumentException if duplicate keys are provided
 	 */
-	public static <KK> ImmutableTypedMap<KK> of(KK k1, TypedSupplier<?> v1, KK k2, TypedSupplier<?> v2, KK k3,
+	public static <I> ImmutableTypedMap<I> of(I k1, TypedSupplier<?> v1, I k2, TypedSupplier<?> v2, I k3,
 			TypedSupplier<?> v3) {
-		return new RegularImmutableTypedMap<KK>(ImmutableMap.of(k1, v1, k2, v2, k3, v3));
+		return new RegularImmutableTypedMap<I>(ImmutableMap.of(k1, v1, k2, v2, k3, v3));
 	}
 
 	/**
@@ -84,9 +88,9 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	 * 
 	 * @throws IllegalArgumentException if duplicate keys are provided
 	 */
-	public static <KK> ImmutableTypedMap<KK> of(KK k1, TypedSupplier<?> v1, KK k2, TypedSupplier<?> v2, KK k3,
-			TypedSupplier<?> v3, KK k4, TypedSupplier<?> v4) {
-		return new RegularImmutableTypedMap<KK>(ImmutableMap.of(k1, v1, k2, v2, k3, v3, k4, v4));
+	public static <I> ImmutableTypedMap<I> of(I k1, TypedSupplier<?> v1, I k2, TypedSupplier<?> v2, I k3,
+			TypedSupplier<?> v3, I k4, TypedSupplier<?> v4) {
+		return new RegularImmutableTypedMap<I>(ImmutableMap.of(k1, v1, k2, v2, k3, v3, k4, v4));
 	}
 
 	/**
@@ -94,9 +98,9 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	 * 
 	 * @throws IllegalArgumentException if duplicate keys are provided
 	 */
-	public static <KK> ImmutableTypedMap<KK> of(KK k1, TypedSupplier<?> v1, KK k2, TypedSupplier<?> v2, KK k3,
-			TypedSupplier<?> v3, KK k4, TypedSupplier<?> v4, KK k5, TypedSupplier<?> v5) {
-		return new RegularImmutableTypedMap<KK>(ImmutableMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5));
+	public static <I> ImmutableTypedMap<I> of(I k1, TypedSupplier<?> v1, I k2, TypedSupplier<?> v2, I k3,
+			TypedSupplier<?> v3, I k4, TypedSupplier<?> v4, I k5, TypedSupplier<?> v5) {
+		return new RegularImmutableTypedMap<I>(ImmutableMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5));
 	}
 
 	// looking for of() with > 5 entries? Use the builder instead.
@@ -106,8 +110,8 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	 * constructor.
 	 */
 	@Nonnull
-	public static <KK> Builder<KK> builder() {
-		return new Builder<KK>();
+	public static <I> Builder<I> builder() {
+		return new Builder<I>();
 	}
 
 	public static class Builder<K> {
@@ -134,7 +138,7 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 		 * allowed, and will cause {@link #build} to fail.
 		 */
 		public <TT> Builder<K> put(TypedKey<TT, K> key, TT value) {
-			builder.put(key.getId(), IdentityTypedSupplier.create(key.getType(), value));
+			builder.put(key.getId(), ImmutableTypedSupplier.create(key.getType(), value));
 			return this;
 		}
 
@@ -172,13 +176,13 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 			return fromEntryList(builder.build());
 		}
 
-		private static <KK> ImmutableTypedMap<KK> fromEntryList(ImmutableMap<KK, TypedSupplier<?>> m) {
+		private static <I> ImmutableTypedMap<I> fromEntryList(ImmutableMap<I, TypedSupplier<?>> m) {
 			int size = m.size();
 			switch (size) {
 			case 0:
 				return of();
 			default:
-				return new RegularImmutableTypedMap<KK>(m);
+				return new RegularImmutableTypedMap<I>(m);
 			}
 		}
 
@@ -189,7 +193,7 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	 * 
 	 * @return the immutable map that this typed map delegates to
 	 */
-	abstract ImmutableMap<? extends K, ? extends TypedSupplier<?>> delegate();
+	abstract ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate();
 
 	public int size() {
 		return delegate().size();
@@ -199,166 +203,110 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 		return delegate().isEmpty();
 	}
 
-	public <TT> boolean containsKeyId(TT key) {
-		return delegate().containsKey(key);
-	}
-
 	/**
-	 * True for all typedKeys().contains(typedKey) and any typedKey assignable from a typedKey.
+	 * @returns true for all keys().contains(typedKey) where the provided key type is assignable from the contained key type.
 	 */
-	public <TT> boolean containsTypedKey(TypedKey<TT, ? extends K> typedKey) {
+	public <T> boolean contains(@Nonnull TypedKey<T, ? extends ID> typedKey) {
 		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
 		if (valueSupplier == null) {
 			return false;
 		}
 		return typedKey.getType().isAssignableFrom(valueSupplier.getType());
 	}
-
+	
 	/**
-	 * Equivalent to values().contains(value). {@code O(N)} runtime.
+	 * @returns true if there exists a key in the map with the provided ID.
 	 */
-	public <TT> boolean containsValue(TT value) {
-		return values().contains(value);
-	}
-
-	public <TT> boolean containsValueSupplier(TypedSupplier<TT> valueSupplier) {
-		return delegate().containsValue(valueSupplier);
+	public <T> boolean contains(@Nonnull ID id) {
+		TypedSupplier<?> valueSupplier = delegate().get(id);
+		return valueSupplier != null;
 	}
 
 	@Nonnull
-	public <TT> TT get(@Nonnull TypeToken<TT> type, @Nonnull K keyId) throws EntryNotFoundException, ClassCastException {
-		TypedSupplier<?> valueSupplier = delegate().get(keyId);
-		if (valueSupplier == null) {
-			throw new EntryNotFoundException("Value does not exist for the keyId: " + keyId);
-		}
-		TypedSupplier<TT> typedSupplier = checkValueType(type, valueSupplier);
-		return typedSupplier.get();
-	}
-
-	@Nonnull
-	public <TT> TT get(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException, ClassCastException {
+	public <T> T get(@Nonnull TypedKey<T, ? extends ID> typedKey) throws EntryNotFoundException, ClassCastException {
 		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
 		if (valueSupplier == null) {
 			throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
 		}
-		TypedSupplier<TT> typedSupplier = checkValueType(typedKey.getType(), valueSupplier);
+		TypedSupplier<T> typedSupplier = checkValueType(typedKey.getType(), valueSupplier);
 		return typedSupplier.get();
 	}
+	
+	@Nonnull
+	public Object get(@Nonnull ID id) throws EntryNotFoundException {
+		TypedSupplier<?> valueSupplier = delegate().get(id);
+		if (valueSupplier == null) {
+			throw new EntryNotFoundException("Value does not exist for the key ID: " + id);
+		}
+		return valueSupplier.get();
+	}
+	
+	private transient ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> entrySet;
 
 	@Nonnull
-	public <TT> TypedSupplier<TT> getSupplier(@Nonnull TypeToken<TT> type, @Nonnull K keyId)
-			throws EntryNotFoundException, ClassCastException {
-		TypedSupplier<?> valueSupplier = delegate().get(keyId);
-		if (valueSupplier == null) {
-			throw new EntryNotFoundException("Value does not exist for the keyId: " + keyId);
-		}
-		TypedSupplier<TT> typedSupplier = checkValueType(type, valueSupplier);
-		return typedSupplier;
+	public ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> entries() {
+		ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> result = entrySet;
+		return (result == null) ? entrySet = createEntrySet() : result;
 	}
-
+	
 	@Nonnull
-	public <TT> TypedSupplier<TT> getSupplier(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException,
-			ClassCastException {
-		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
-		if (valueSupplier == null) {
-			throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
-		}
-		TypedSupplier<TT> typedSupplier = checkValueType(typedKey.getType(), valueSupplier);
-		return typedSupplier;
+	ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> createEntrySet() {
+		//TODO: use a lazy iterator?
+		//based on the cachable entrySupplierSet
+		return ImmutableSet.copyOf(Collections2.transform(entrySuppliers(), new EntryToKeyedEntryTransform()));
 	}
-
-	private transient ImmutableSet<? extends Entry<? extends K, ? extends TypedSupplier<?>>> entrySet;
+	
+	class EntryToKeyedEntryTransform implements Function<Entry<? extends ID, ? extends TypedSupplier<?>>, Entry<? extends TypedKey<?, ? extends ID>, ?>> {
+		public Entry<? extends TypedKey<?, ? extends ID>, ?> apply(Entry<? extends ID, ? extends TypedSupplier<?>> input) {
+			TypedSupplier<?> valueSupplier = input.getValue();
+			return Maps.immutableEntry(ImmutableTypedKey.create(valueSupplier.getType(), input.getKey()), valueSupplier.get());
+		}
+	};
+	
+	private transient ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> entrySupplierSet;
 
 	/**
 	 * Returns an immutable set of the mappings in this map. The entries are in the same order as the parameters used to
 	 * build this map.
 	 */
-	public ImmutableSet<? extends Entry<? extends K, ? extends TypedSupplier<?>>> entrySet() {
-		ImmutableSet<? extends Entry<? extends K, ? extends TypedSupplier<?>>> result = entrySet;
-		return (result == null) ? entrySet = createEntrySet() : result;
+	@Nonnull
+	public ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> entrySuppliers() {
+		ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> result = entrySupplierSet;
+		return (result == null) ? entrySupplierSet = createEntrySupplierSet() : result;
 	}
 
-	ImmutableSet<? extends Entry<? extends K, ? extends TypedSupplier<?>>> createEntrySet() {
+	@Nonnull
+	ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> createEntrySupplierSet() {
 		return delegate().entrySet();
 	}
 
-	private transient ImmutableSet<? extends K> keySet;
-
-	/**
-	 * Returns an immutable set of the keys in this map. These keys are in the same order as the parameters used to
-	 * build this map.
-	 */
-	public ImmutableSet<? extends K> keySet() {
-		ImmutableSet<? extends K> result = keySet;
-		return (result == null) ? keySet = createKeySet() : result;
-	}
-
-	ImmutableSet<? extends K> createKeySet() {
-		return delegate().keySet();
-	}
-
-	private transient ImmutableSet<? extends TypedKey<?, ? extends K>> typedKeySet;
+	private transient ImmutableSet<? extends TypedKey<?, ? extends ID>> typedKeySet;
 
 	/**
 	 * Returns an immutable set of the typed keys in this map. These typed keys are in the same order as the parameters
 	 * used to build this map.
 	 */
-	public ImmutableSet<? extends TypedKey<?, ? extends K>> typedKeySet() {
-		ImmutableSet<? extends TypedKey<?, ? extends K>> result = typedKeySet;
-		return (result == null) ? typedKeySet = createTypedKeySet() : result;
+	@Nonnull
+	public ImmutableSet<? extends TypedKey<?, ? extends ID>> keys() {
+		ImmutableSet<? extends TypedKey<?, ? extends ID>> result = typedKeySet;
+		return (result == null) ? typedKeySet = createKeySet() : result;
 	}
 
-	ImmutableSet<? extends TypedKey<?, ? extends K>> createTypedKeySet() {
+	@Nonnull
+	ImmutableSet<? extends TypedKey<?, ? extends ID>> createKeySet() {
 		//TODO: use a lazy iterator?
-		//based on the cachable entrySet
-		return ImmutableSet.copyOf(Collections2.transform(entrySet(), new EntryToTypedKeyTransform()));
+		//based on the cachable entrySupplierSet
+		return ImmutableSet.copyOf(Collections2.transform(entrySuppliers(), new EntryToTypedKeyTransform()));
 	}
 
-	class EntryToTypedKeyTransform implements Function<Entry<? extends K, ? extends TypedSupplier<?>>, TypedKey<?, K>> {
-		public TypedKey<?, K> apply(Entry<? extends K, ? extends TypedSupplier<?>> input) {
-			return ImmutableTypedKey.create(input.getValue().getType(), (K) input.getKey());
+	class EntryToTypedKeyTransform implements Function<Entry<? extends ID, ? extends TypedSupplier<?>>, TypedKey<?, ID>> {
+		public TypedKey<?, ID> apply(Entry<? extends ID, ? extends TypedSupplier<?>> input) {
+			return ImmutableTypedKey.create(input.getValue().getType(), (ID) input.getKey());
 		}
 	};
 
-	private transient ImmutableCollection<?> values;
-
-	/**
-	 * Returns an immutable collection of the values in this map. The values are in the same order as the parameters
-	 * used to build this map.
-	 */
-	public ImmutableCollection<?> values() {
-		ImmutableCollection<?> result = values;
-		return (result == null) ? values = createValues() : result;
-	}
-
-	ImmutableCollection<?> createValues() {
-		//TODO: use a lazy iterator?
-		//based on the cachable valueSuppliers
-		return ImmutableList.copyOf(Collections2.transform(valueSuppliers(), new SupplierFunction()));
-	}
-
-	class SupplierFunction implements Function<Supplier<?>, Object> {
-		public Object apply(Supplier<?> input) {
-			return input.get();
-		}
-	}
-
-	private transient ImmutableCollection<? extends TypedSupplier<?>> valueSuppliers;
-
-	/**
-	 * Returns an immutable collection of the value suppliers in this map. The value suppliers are in the same order as
-	 * the parameters used to build this map.
-	 */
-	public ImmutableCollection<? extends TypedSupplier<?>> valueSuppliers() {
-		ImmutableCollection<? extends TypedSupplier<?>> result = valueSuppliers;
-		return (result == null) ? valueSuppliers = createValueSuppliers() : result;
-	}
-
-	ImmutableCollection<? extends TypedSupplier<?>> createValueSuppliers() {
-		return delegate().values();
-	}
-
-	static <TT> TypedSupplier<TT> checkValueType(TypeToken<TT> type, TypedSupplier<?> valueSupplier)
+	@Nonnull
+	static <TT> TypedSupplier<TT> checkValueType(@Nonnull TypeToken<TT> type, @Nonnull TypedSupplier<?> valueSupplier)
 			throws ClassCastException {
 		if (!type.isAssignableFrom(valueSupplier.getType())) {
 			throw new ClassCastException("Key type is not assignable from the existing value type.");
@@ -376,7 +324,7 @@ public abstract class ImmutableTypedMap<K> implements TypedMap<K> {
 	@Override
 	public int hashCode() {
 		// not caching hash code since it could change if map values are mutable in a way that modifies their hash codes
-		return entrySet().hashCode();
+		return entries().hashCode();
 	}
 
 	@Override

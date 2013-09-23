@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package karlkfi.jtyped.map;
+package karlkfi.jtyped;
 
 import javax.annotation.Nonnull;
 
-import karlkfi.jtyped.TypedReference;
+import com.google.common.reflect.TypeToken;
 
-public interface TypedKey<T, ID> extends TypedReference<T> {
+/**
+ * A reference to an object of a certain generic type.
+ * Note that because the class is generically typed it cannot refer to its own type (because of generic looping).
+ * This parent type does not specify how the reference is linked for flexibility of interface extension.
+ * 
+ * @param <T> the generic type of the referenced object
+ */
+public interface TypedReference<T> {
 
 	@Nonnull
-	ID getId();
+	TypeToken<T> getType();
 
 }

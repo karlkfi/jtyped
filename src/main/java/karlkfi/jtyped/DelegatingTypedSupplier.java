@@ -13,15 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package karlkfi.jtyped.map;
+package karlkfi.jtyped;
 
 import javax.annotation.Nonnull;
 
-import karlkfi.jtyped.TypedReference;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
+import com.google.common.reflect.TypeToken;
 
-public interface TypedKey<T, ID> extends TypedReference<T> {
+public class DelegatingTypedSupplier<T> implements TypedSupplier<T> {
+
+	private final TypeToken<T> type;
+	private final Supplier<T> valueSupplier;
+
+	public DelegatingTypedSupplier(@Nonnull TypeToken<T> type, @Nonnull Supplier<T> valueSupplier) {
+		this.type = Preconditions.checkNotNull(type, "type is null");
+		this.valueSupplier = Preconditions.checkNotNull(valueSupplier, "valueSupplier is null");
+	}
 
 	@Nonnull
-	ID getId();
+	public TypeToken<T> getType() {
+		return type;
+	}
+
+	public T get() {
+		return valueSupplier.get();
+	}
 
 }

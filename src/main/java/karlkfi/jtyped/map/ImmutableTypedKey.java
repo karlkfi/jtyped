@@ -15,29 +15,32 @@
  ******************************************************************************/
 package karlkfi.jtyped.map;
 
+import javax.annotation.concurrent.Immutable;
+
 import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 
-public final class ImmutableTypedKey<T, K> implements TypedKey<T, K> {
+@Immutable
+public final class ImmutableTypedKey<T, ID> implements TypedKey<T, ID> {
 
 	final TypeToken<T> type;
-	final K key;
+	final ID id;
 
-	ImmutableTypedKey(TypeToken<T> type, K key) {
-		this.type = Preconditions.checkNotNull(type, "type is null for key=%s", key);
-		this.key = Preconditions.checkNotNull(key, "key is null for type=%s", type);
+	ImmutableTypedKey(TypeToken<T> type, ID id) {
+		this.type = Preconditions.checkNotNull(type, "type is null for id=%s", id);
+		this.id = Preconditions.checkNotNull(id, "id is null for type=%s", type);
 	}
 
-	public static <TT, KK> ImmutableTypedKey<TT, KK> create(TypeToken<TT> type, KK key) {
-		return new ImmutableTypedKey<TT, KK>(type, key);
+	public static <TT, I> ImmutableTypedKey<TT, I> create(TypeToken<TT> type, I id) {
+		return new ImmutableTypedKey<TT, I>(type, id);
 	}
 
 	public TypeToken<T> getType() {
 		return type;
 	}
 
-	public K getId() {
-		return key;
+	public ID getId() {
+		return id;
 	}
 
 }

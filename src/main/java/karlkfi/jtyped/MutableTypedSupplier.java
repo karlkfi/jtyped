@@ -17,11 +17,34 @@ package karlkfi.jtyped;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.base.Preconditions;
 import com.google.common.reflect.TypeToken;
 
-public interface TypedObject<T> {
+public final class MutableTypedSupplier<T> implements TypedSupplier<T> {
+
+	private final TypeToken<T> type;
+	private T value;
+
+	public MutableTypedSupplier(@Nonnull TypeToken<T> type) {
+		this.type = Preconditions.checkNotNull(type, "type is null");
+	}
+	
+	public MutableTypedSupplier(@Nonnull TypeToken<T> type, T value) {
+		this.type = Preconditions.checkNotNull(type, "type is null");
+		this.value = value;
+	}
 
 	@Nonnull
-	TypeToken<T> getType();
+	public TypeToken<T> getType() {
+		return type;
+	}
+
+	public T get() {
+		return value;
+	}
+	
+	public void set(T newValue) {
+		this.value = newValue;
+	}
 
 }

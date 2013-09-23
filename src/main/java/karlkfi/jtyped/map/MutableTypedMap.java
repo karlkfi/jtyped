@@ -15,21 +15,18 @@
  ******************************************************************************/
 package karlkfi.jtyped.map;
 
-import java.util.Map;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import karlkfi.jtyped.TypedObject;
 import karlkfi.jtyped.TypedSupplier;
 
 /**
  * An object that maps typed keys to typed values. A map cannot contain duplicate keys; each key can map to at most one
  * value.
  * 
- * @param <K> the key type
+ * @param <ID> the key ID type
  */
-public interface MutableTypedMap<K> extends TypedMap<K> {
+public interface MutableTypedMap<ID> extends TypedMap<ID> {
 
 	/**
 	 * Associates the specified value with the specified key in this map. If the map previously contained a mapping for
@@ -50,12 +47,8 @@ public interface MutableTypedMap<K> extends TypedMap<K> {
 	 *             or if the key is of an inappropriate type for this map
 	 */
 	@Nullable
-	<TT> TypedSupplier<TT> put(@Nonnull TypedKey<TT, K> typedKey, @Nonnull TT value) throws NullPointerException,
+	<TT> TypedSupplier<TT> put(@Nonnull TypedKey<TT, ? extends ID> typedKey, @Nonnull TT value) throws NullPointerException,
 			ClassCastException;
-
-	@Nullable
-	<TT> TypedSupplier<TT> putSupplier(@Nonnull TypedKey<TT, K> typedKey, @Nonnull TypedSupplier<TT> valueSupplier)
-			throws NullPointerException, ClassCastException;
 
 	/**
 	 * Sets the type of an entry so that it cannot be changed.
@@ -69,17 +62,14 @@ public interface MutableTypedMap<K> extends TypedMap<K> {
 	 * @throws ClassCastException if the key corresponds to a value but the new key type does not match the value type
 	 *             or if the key is of an inappropriate type for this map
 	 */
-	<TT> void setType(@Nonnull TypedKey<TT, K> typedKey) throws NullPointerException, ClassCastException;
+	<TT> void setType(@Nonnull TypedKey<TT, ? extends ID> typedKey) throws NullPointerException, ClassCastException;
 
 	@Nullable
-	<TT> TypedSupplier<TT> remove(@Nonnull TT typedKey);
-
-	@Nullable
-	<TT> TypedSupplier<TT> removeTyped(@Nonnull TypedKey<TT, K> typedKey) throws NullPointerException,
+	<TT> TypedSupplier<TT> remove(@Nonnull TypedKey<TT, ? extends ID> typedKey) throws NullPointerException,
 			ClassCastException;
 
 	@Nullable
-	void putAll(@Nonnull Map<?, ? extends TypedSupplier<?>> m) throws NullPointerException, IllegalArgumentException,
+	void putAll(@Nonnull TypedMap<? extends ID> m) throws NullPointerException, IllegalArgumentException,
 			ClassCastException;
 
 	/**

@@ -25,18 +25,19 @@ import com.google.common.collect.ImmutableSet;
 /**
  * TypedBiMap with no mappings.
  * 
- * @param <K> the key type
+ * @param <ID> the key ID type
  */
-final class EmptyImmutableTypedMap<K> extends ImmutableTypedMap<K> {
+final class EmptyImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
+
 	static final EmptyImmutableTypedMap<Object> INSTANCE = new EmptyImmutableTypedMap<Object>();
 
-	private ImmutableMap<? extends K, ? extends TypedSupplier<?>> delegate = ImmutableMap.of();
+	private ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate = ImmutableMap.of();
 
 	private EmptyImmutableTypedMap() {
 	}
 
 	@Override
-	ImmutableMap<? extends K, ? extends TypedSupplier<?>> delegate() {
+	ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate() {
 		return delegate;
 	}
 
@@ -51,58 +52,27 @@ final class EmptyImmutableTypedMap<K> extends ImmutableTypedMap<K> {
 	}
 
 	@Override
-	public <TT> boolean containsKeyId(TT key) {
+	public <T> boolean contains(TypedKey<T, ? extends ID> typedKey) {
 		return false;
 	}
 
 	@Override
-	public <TT> boolean containsTypedKey(TypedKey<TT, ? extends K> typedKey) {
-		return false;
-	}
-
-	@Override
-	public <TT> boolean containsValue(TT value) {
-		return false;
-	}
-
-	@Override
-	public <TT> boolean containsValueSupplier(TypedSupplier<TT> valueSupplier) {
-		return false;
-	}
-
-	@Override
-	public <TT> TT get(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException, ClassCastException {
+	public <T> T get(TypedKey<T, ? extends ID> typedKey) throws EntryNotFoundException, ClassCastException {
 		throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
 	}
 
 	@Override
-	public <TT> TypedSupplier<TT> getSupplier(TypedKey<TT, ? extends K> typedKey) throws EntryNotFoundException,
-			ClassCastException {
-		throw new EntryNotFoundException("Value supplier does not exist for the key: " + typedKey);
+	ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> createEntrySet() {
+		return ImmutableSet.of();
 	}
-
+	
 	@Override
-	ImmutableSet<? extends Entry<? extends K, ? extends TypedSupplier<?>>> createEntrySet() {
+	ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> createEntrySupplierSet() {
 		return ImmutableSet.of();
 	}
 
 	@Override
-	ImmutableSet<? extends K> createKeySet() {
-		return ImmutableSet.of();
-	}
-
-	@Override
-	ImmutableSet<? extends TypedKey<?, ? extends K>> createTypedKeySet() {
-		return ImmutableSet.of();
-	}
-
-	@Override
-	ImmutableSet<?> createValues() {
-		return ImmutableSet.of();
-	}
-
-	@Override
-	ImmutableSet<? extends TypedSupplier<?>> createValueSuppliers() {
+	ImmutableSet<? extends TypedKey<?, ? extends ID>> createKeySet() {
 		return ImmutableSet.of();
 	}
 
