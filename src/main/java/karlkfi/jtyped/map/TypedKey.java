@@ -19,6 +19,12 @@ import javax.annotation.Nonnull;
 
 import karlkfi.jtyped.TypedReference;
 
+/**
+ * A composite key with a generic ID and a generic type.
+ * 
+ * @param <T> the key type
+ * @param <ID> the key id type
+ */
 public interface TypedKey<T, ID> extends TypedReference<T> {
 
 	@Nonnull

@@ -37,7 +37,7 @@ final class EmptyImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 	}
 
 	@Override
-	ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate() {
+	protected ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate() {
 		return delegate;
 	}
 

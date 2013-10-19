@@ -40,7 +40,7 @@ public final class ImmutableTypedSupplier<V> implements TypedSupplier<V> {
 	}
 	
 	@Nonnull
-	public static <VV> ImmutableTypedSupplier<VV> create(@Nonnull TypeToken<VV> type, VV value) {
+	public static <VV> ImmutableTypedSupplier<VV> of(@Nonnull TypeToken<VV> type, VV value) {
 		return new ImmutableTypedSupplier<VV>(type, value);
 	}
 

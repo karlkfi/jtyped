@@ -15,13 +15,12 @@
  ******************************************************************************/
 package karlkfi.jtyped.map;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
+import com.google.common.base.Preconditions;
 import com.google.common.base.Joiner;
 import com.google.common.base.Joiner.MapJoiner;
 import com.google.common.primitives.Ints;
 
-public final class TypedMaps {
+final class TypedMaps {
 
 	private TypedMaps() {
 	}
@@ -55,7 +54,7 @@ public final class TypedMaps {
 	 * Based on {@link com.google.common.collect.Collections2}
 	 */
 	static StringBuilder newStringBuilderForCollection(int size) {
-		checkArgument(size >= 0, "size must be non-negative");
+		Preconditions.checkArgument(size >= 0, "size must be non-negative");
 		return new StringBuilder((int) Math.min(size * 8L, Ints.MAX_POWER_OF_TWO));
 	}
 

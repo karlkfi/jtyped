@@ -31,8 +31,12 @@ public final class ImmutableTypedKey<T, ID> implements TypedKey<T, ID> {
 		this.id = Preconditions.checkNotNull(id, "id is null for type=%s", type);
 	}
 
-	public static <TT, I> ImmutableTypedKey<TT, I> create(TypeToken<TT> type, I id) {
+	public static <TT, I> ImmutableTypedKey<TT, I> of(TypeToken<TT> type, I id) {
 		return new ImmutableTypedKey<TT, I>(type, id);
+	}
+	
+	public static <TT, I> ImmutableTypedKey<TT, I> of(Class<TT> type, I id) {
+		return new ImmutableTypedKey<TT, I>(TypeToken.of(type), id);
 	}
 
 	public TypeToken<T> getType() {

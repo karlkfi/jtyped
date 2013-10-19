@@ -22,14 +22,13 @@ import karlkfi.jtyped.TypedSupplier;
 import com.google.common.collect.ImmutableMap;
 
 /**
+ * Reference ImmutableTypedMap implementation, backed by an ImmutableMap.
  * 
- * @author Karl
- *
  * @param <ID> the key ID type
  */
-final class RegularImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
+final class StandardSuppliedTypedMap<ID> extends SuppliedTypedMap<ID> {
 
-	private ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate;
+	private Map<? extends ID, ? extends TypedSupplier<?>> delegate;
 
 	/**
 	 * Constructs a new ImmutableTypedMap with the same mappings as the specified Map. If <code>m</code> is an
@@ -37,12 +36,8 @@ final class RegularImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 	 * 
 	 * @param m the m
 	 */
-	RegularImmutableTypedMap(Map<? extends ID, ? extends TypedSupplier<?>> m) {
-		if (m instanceof ImmutableMap) {
-			this.delegate = (ImmutableMap<? extends ID, ? extends TypedSupplier<?>>) m;
-		} else {
-			this.delegate = ImmutableMap.copyOf(m);
-		}
+	StandardSuppliedTypedMap(Map<? extends ID, ? extends TypedSupplier<?>> m) {
+		this.delegate = m;
 	}
 
 	/**
@@ -51,7 +46,7 @@ final class RegularImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 	 * @return the immutable map that this typed map delegates to
 	 */
 	@Override
-	ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate() {
+	protected Map<? extends ID, ? extends TypedSupplier<?>> delegate() {
 		return delegate;
 	}
 

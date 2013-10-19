@@ -15,6 +15,9 @@
  ******************************************************************************/
 package karlkfi.jtyped.map;
 
+/**
+ * Exception indicating that no entry was found matching the specified query.
+ */
 public class EntryNotFoundException extends RuntimeException {
 
 	/**
