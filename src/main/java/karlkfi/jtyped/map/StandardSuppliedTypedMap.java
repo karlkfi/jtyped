@@ -17,6 +17,8 @@ package karlkfi.jtyped.map;
 
 import java.util.Map;
 
+import javax.annotation.concurrent.NotThreadSafe;
+
 import karlkfi.jtyped.TypedSupplier;
 
 import com.google.common.collect.ImmutableMap;
@@ -26,18 +28,20 @@ import com.google.common.collect.ImmutableMap;
  * 
  * @param <ID> the key ID type
  */
+@NotThreadSafe
 final class StandardSuppliedTypedMap<ID> extends SuppliedTypedMap<ID> {
 
-	private Map<? extends ID, ? extends TypedSupplier<?>> delegate;
+	private Map<ID, TypedSupplier<Object>> delegate;
 
 	/**
 	 * Constructs a new ImmutableTypedMap with the same mappings as the specified Map. If <code>m</code> is an
 	 * {@link ImmutableMap} it will be used as the delegate map instead of being copied.
 	 * 
-	 * @param m the m
+	 * @param m the map
 	 */
+	@SuppressWarnings("unchecked")
 	StandardSuppliedTypedMap(Map<? extends ID, ? extends TypedSupplier<?>> m) {
-		this.delegate = m;
+		this.delegate = HashMaps.copyOf((Map<ID, TypedSupplier<Object>>) m);
 	}
 
 	/**
@@ -46,7 +50,7 @@ final class StandardSuppliedTypedMap<ID> extends SuppliedTypedMap<ID> {
 	 * @return the immutable map that this typed map delegates to
 	 */
 	@Override
-	protected Map<? extends ID, ? extends TypedSupplier<?>> delegate() {
+	protected Map<ID, TypedSupplier<Object>> delegate() {
 		return delegate;
 	}
 

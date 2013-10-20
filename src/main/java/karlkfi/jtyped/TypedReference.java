@@ -20,9 +20,9 @@ import javax.annotation.Nonnull;
 import com.google.common.reflect.TypeToken;
 
 /**
- * A reference to an object of a certain generic type.
- * Note that because the class is generically typed it cannot refer to its own type (because of generic looping).
- * This parent type does not specify how the reference is linked for flexibility of interface extension.
+ * A reference to an object of a certain generic type. Note that because the class is generically typed it cannot refer
+ * to its own type (because of generic looping). This parent type does not specify how the reference is linked for
+ * flexibility of interface extension.
  * 
  * @param <T> the generic type of the referenced object
  */

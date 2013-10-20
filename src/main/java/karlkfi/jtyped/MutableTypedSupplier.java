@@ -28,7 +28,7 @@ public final class MutableTypedSupplier<T> implements TypedSupplier<T> {
 	public MutableTypedSupplier(@Nonnull TypeToken<T> type) {
 		this.type = Preconditions.checkNotNull(type, "type is null");
 	}
-	
+
 	public MutableTypedSupplier(@Nonnull TypeToken<T> type, T value) {
 		this.type = Preconditions.checkNotNull(type, "type is null");
 		this.value = value;
@@ -42,9 +42,19 @@ public final class MutableTypedSupplier<T> implements TypedSupplier<T> {
 	public T get() {
 		return value;
 	}
-	
+
 	public void set(T newValue) {
 		this.value = newValue;
+	}
+
+	@Nonnull
+	public static <VV> MutableTypedSupplier<VV> of(@Nonnull TypeToken<VV> type, VV value) {
+		return new MutableTypedSupplier<VV>(type, value);
+	}
+
+	@Nonnull
+	public static <VV> MutableTypedSupplier<VV> nonnull(@Nonnull TypeToken<VV> type, @Nonnull VV value) {
+		return new MutableTypedSupplier<VV>(type, Preconditions.checkNotNull(value, "value is null"));
 	}
 
 }

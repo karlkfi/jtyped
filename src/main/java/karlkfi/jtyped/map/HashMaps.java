@@ -6,6 +6,15 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 public class HashMaps {
+	
+	/**
+	 * Copies map entries into a new map.
+	 * @param map the source to copy from
+	 * @return a new map copy of the input map
+	 */
+	public static <K, V> HashMap<K, V> copyOf(Map<? extends K, ? extends V> map) {
+		return new HashMap<K, V>(map);
+	}
 
 	/**
 	 * Returns an empty hash map.

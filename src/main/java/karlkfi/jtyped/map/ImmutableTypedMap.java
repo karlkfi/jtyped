@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.ThreadSafe;
 
 import karlkfi.jtyped.ImmutableTypedSupplier;
 import karlkfi.jtyped.TypeTokens;
 import karlkfi.jtyped.TypedSupplier;
-import karlkfi.jtyped.TypedSuppliers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -42,6 +42,7 @@ import com.google.common.collect.ImmutableSet;
  * 
  * @param <ID> the key ID type
  */
+@ThreadSafe
 public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 
 	/**
@@ -62,7 +63,7 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 			@Nonnull TypedKey<T1, I> k1, @Nonnull T1 v1) {
 		Preconditions.checkNotNull(k1, "k1 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				k1.getId(), TypedSuppliers.nonnull(k1.getType(), v1)));
+				k1.getId(), ImmutableTypedSupplier.nonnull(k1.getType(), v1)));
 	}
 
 	/**
@@ -76,8 +77,8 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(k1, "k1 is null");
 		Preconditions.checkNotNull(k2, "k2 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				k1.getId(), TypedSuppliers.nonnull(k1.getType(), v1),
-				k2.getId(), TypedSuppliers.nonnull(k2.getType(), v2)));
+				k1.getId(), ImmutableTypedSupplier.nonnull(k1.getType(), v1),
+				k2.getId(), ImmutableTypedSupplier.nonnull(k2.getType(), v2)));
 	}
 
 	/**
@@ -93,9 +94,9 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(k2, "k2 is null");
 		Preconditions.checkNotNull(k3, "k3 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				k1.getId(), TypedSuppliers.nonnull(k1.getType(), v1),
-				k2.getId(), TypedSuppliers.nonnull(k2.getType(), v2),
-				k3.getId(), TypedSuppliers.nonnull(k3.getType(), v3)));
+				k1.getId(), ImmutableTypedSupplier.nonnull(k1.getType(), v1),
+				k2.getId(), ImmutableTypedSupplier.nonnull(k2.getType(), v2),
+				k3.getId(), ImmutableTypedSupplier.nonnull(k3.getType(), v3)));
 	}
 
 	/**
@@ -113,10 +114,10 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(k3, "k3 is null");
 		Preconditions.checkNotNull(k4, "k4 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				k1.getId(), TypedSuppliers.nonnull(k1.getType(), v1),
-				k2.getId(), TypedSuppliers.nonnull(k2.getType(), v2),
-				k3.getId(), TypedSuppliers.nonnull(k3.getType(), v3),
-				k4.getId(), TypedSuppliers.nonnull(k4.getType(), v4)));
+				k1.getId(), ImmutableTypedSupplier.nonnull(k1.getType(), v1),
+				k2.getId(), ImmutableTypedSupplier.nonnull(k2.getType(), v2),
+				k3.getId(), ImmutableTypedSupplier.nonnull(k3.getType(), v3),
+				k4.getId(), ImmutableTypedSupplier.nonnull(k4.getType(), v4)));
 	}
 
 	/**
@@ -136,11 +137,11 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(k4, "k4 is null");
 		Preconditions.checkNotNull(k5, "k5 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				k1.getId(), TypedSuppliers.nonnull(k1.getType(), v1),
-				k2.getId(), TypedSuppliers.nonnull(k2.getType(), v2),
-				k3.getId(), TypedSuppliers.nonnull(k3.getType(), v3),
-				k4.getId(), TypedSuppliers.nonnull(k4.getType(), v4),
-				k5.getId(), TypedSuppliers.nonnull(k5.getType(), v5)));
+				k1.getId(), ImmutableTypedSupplier.nonnull(k1.getType(), v1),
+				k2.getId(), ImmutableTypedSupplier.nonnull(k2.getType(), v2),
+				k3.getId(), ImmutableTypedSupplier.nonnull(k3.getType(), v3),
+				k4.getId(), ImmutableTypedSupplier.nonnull(k4.getType(), v4),
+				k5.getId(), ImmutableTypedSupplier.nonnull(k5.getType(), v5)));
 	}
 
 	// looking for of() with > 5 entries? Use the builder instead.
@@ -154,7 +155,7 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 			@Nonnull I id1, @Nonnull Object v1) {
 		Preconditions.checkNotNull(id1, "id1 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1)));
+				id1, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1)));
 	}
 
 	/**
@@ -168,8 +169,8 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id1, "id1 is null");
 		Preconditions.checkNotNull(id2, "id2 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2)));
+				id1, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2)));
 	}
 
 	/**
@@ -185,9 +186,9 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id2, "id2 is null");
 		Preconditions.checkNotNull(id3, "id3 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2),
-				id3, TypedSuppliers.nonnull(TypeTokens.raw(v3), v3)));
+				id1, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2),
+				id3, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v3), v3)));
 	}
 
 	/**
@@ -205,10 +206,10 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id3, "id3 is null");
 		Preconditions.checkNotNull(id4, "id4 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2),
-				id3, TypedSuppliers.nonnull(TypeTokens.raw(v3), v3),
-				id4, TypedSuppliers.nonnull(TypeTokens.raw(v4), v4)));
+				id1, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2),
+				id3, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v3), v3),
+				id4, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v4), v4)));
 	}
 
 	/**
@@ -228,11 +229,11 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id4, "id4 is null");
 		Preconditions.checkNotNull(id5, "id5 is null");
 		return new StandardImmutableTypedMap<I>(ImmutableMap.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2),
-				id3, TypedSuppliers.nonnull(TypeTokens.raw(v3), v3),
-				id4, TypedSuppliers.nonnull(TypeTokens.raw(v4), v4),
-				id5, TypedSuppliers.nonnull(TypeTokens.raw(v5), v5)));
+				id1, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2),
+				id3, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v3), v3),
+				id4, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v4), v4),
+				id5, ImmutableTypedSupplier.nonnull(TypeTokens.raw(v5), v5)));
 	}
 	
 
@@ -315,9 +316,9 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 	 * 
 	 * @return the immutable map that this typed map delegates to
 	 */
-	protected abstract ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate();
+	protected abstract ImmutableMap<ID, TypedSupplier<Object>> delegate();
 	
-	private transient ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> entrySet;
+	private transient ImmutableSet<Entry<TypedKey<Object, ID>, Object>> entrySet;
 
 	/**
 	 * Gets the immutable set of all typed key value pairs.
@@ -326,12 +327,12 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 	 * @return the immutable set of typed key value pairs
 	 */
 	@Nonnull
-	public ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> entries() {
-		ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> result = entrySet;
+	public ImmutableSet<Entry<TypedKey<Object, ID>, Object>> entries() {
+		ImmutableSet<Entry<TypedKey<Object, ID>, Object>> result = entrySet;
 		return (result == null) ? entrySet = ImmutableSet.copyOf(createEntrySet()) : result;
 	}
 	
-	private transient ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> entrySupplierSet;
+	private transient ImmutableSet<Entry<ID,TypedSupplier<Object>>> entrySupplierSet;
 
 	/**
 	 * Returns an immutable set of the mappings in this map. The entries are in the same order as the parameters used to
@@ -339,12 +340,12 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 	 * TODO: should this be exposed?
 	 */
 	@Nonnull
-	ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> entrySuppliers() {
-		ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> result = entrySupplierSet;
+	ImmutableSet<Entry<ID, TypedSupplier<Object>>> entrySuppliers() {
+		ImmutableSet<Entry<ID, TypedSupplier<Object>>> result = entrySupplierSet;
 		return (result == null) ? entrySupplierSet = ImmutableSet.copyOf(createEntrySupplierSet()) : result;
 	}
 
-	private transient ImmutableSet<? extends TypedKey<?, ? extends ID>> typedKeySet;
+	private transient ImmutableSet<TypedKey<Object, ID>> typedKeySet;
 
 	/**
 	 * Gets the immutable set of typed keys that have corresponding values in this map.
@@ -353,8 +354,8 @@ public abstract class ImmutableTypedMap<ID> extends AbstractTypedMap<ID> {
 	 * @return the immutable set of typed keys that have corresponding values in this map
 	 */
 	@Nonnull
-	public ImmutableSet<? extends TypedKey<?, ? extends ID>> keys() {
-		ImmutableSet<? extends TypedKey<?, ? extends ID>> result = typedKeySet;
+	public ImmutableSet<TypedKey<Object, ID>> keys() {
+		ImmutableSet<TypedKey<Object, ID>> result = typedKeySet;
 		return (result == null) ? typedKeySet = ImmutableSet.copyOf(createKeySet()) : result;
 	}
 

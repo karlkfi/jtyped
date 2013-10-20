@@ -38,10 +38,15 @@ public final class ImmutableTypedSupplier<V> implements TypedSupplier<V> {
 	public V get() {
 		return value;
 	}
-	
+
 	@Nonnull
 	public static <VV> ImmutableTypedSupplier<VV> of(@Nonnull TypeToken<VV> type, VV value) {
 		return new ImmutableTypedSupplier<VV>(type, value);
+	}
+
+	@Nonnull
+	public static <VV> ImmutableTypedSupplier<VV> nonnull(@Nonnull TypeToken<VV> type, @Nonnull VV value) {
+		return new ImmutableTypedSupplier<VV>(type, Preconditions.checkNotNull(value, "value is null"));
 	}
 
 }

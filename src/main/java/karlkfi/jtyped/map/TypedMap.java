@@ -49,6 +49,22 @@ public interface TypedMap<ID> extends Sized {
 	 * @return true if the map contains a value corresponding to the specified key ID 
 	 */
 	<T> boolean contains(@Nonnull ID keyId);
+	
+	/**
+	 * Checks that the type of an entry matches an expected type.
+	 * 
+	 * This allows for performing type consistency checks on the existing value.
+	 * 
+	 * This does not modify the map.
+	 *
+	 * @param <TT> the most specific type to check the value against
+	 * @param typedKey the typed key
+	 * @throws NullPointerException if the specified <code>typedKey</code> is null
+	 * @throws EntryNotFoundException if the key does not correspond to a value
+	 * @throws ClassCastException if the key corresponds to a value but the expected key type does not match the existing value type
+	 *             or if the key is of an inappropriate type for this map
+	 */
+	<TT> void checkType(@Nonnull TypedKey<TT, ? extends ID> typedKey) throws NullPointerException, EntryNotFoundException, ClassCastException;
 
 	/**
 	 * Gets the value to which the specified key is mapped.
@@ -102,7 +118,7 @@ public interface TypedMap<ID> extends Sized {
 	 * @return the set of typed keys that have corresponding values in this map
 	 */
 	@Nonnull
-	Set<? extends TypedKey<?, ? extends ID>> keys();
+	Set<TypedKey<Object, ID>> keys();
 
 	/**
 	 * Gets the set of all typed key value pairs.
@@ -111,6 +127,6 @@ public interface TypedMap<ID> extends Sized {
 	 * @return the set of typed key value pairs
 	 */
 	@Nonnull
-	Set<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> entries();
+	Set<Entry<TypedKey<Object, ID>, Object>> entries();
 
 }

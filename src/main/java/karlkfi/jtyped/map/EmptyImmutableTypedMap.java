@@ -31,13 +31,13 @@ final class EmptyImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 
 	static final EmptyImmutableTypedMap<Object> INSTANCE = new EmptyImmutableTypedMap<Object>();
 
-	private ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate = ImmutableMap.of();
+	private ImmutableMap<ID, TypedSupplier<Object>> delegate = ImmutableMap.of();
 
 	private EmptyImmutableTypedMap() {
 	}
 
 	@Override
-	protected ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate() {
+	protected ImmutableMap<ID, TypedSupplier<Object>> delegate() {
 		return delegate;
 	}
 
@@ -62,17 +62,17 @@ final class EmptyImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 	}
 
 	@Override
-	ImmutableSet<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> createEntrySet() {
+	ImmutableSet<Entry<TypedKey<Object, ID>, Object>> createEntrySet() {
 		return ImmutableSet.of();
 	}
 	
 	@Override
-	ImmutableSet<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> createEntrySupplierSet() {
+	ImmutableSet<Entry<ID, TypedSupplier<Object>>> createEntrySupplierSet() {
 		return ImmutableSet.of();
 	}
 
 	@Override
-	ImmutableSet<? extends TypedKey<?, ? extends ID>> createKeySet() {
+	ImmutableSet<TypedKey<Object, ID>> createKeySet() {
 		return ImmutableSet.of();
 	}
 

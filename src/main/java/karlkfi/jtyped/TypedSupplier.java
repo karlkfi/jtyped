@@ -19,7 +19,7 @@ import com.google.common.base.Supplier;
 
 /**
  * A {@link TypedReference} that references an object via {@link #get()} fulfilling the {@link Supplier} interface.
- *
+ * 
  * @param <T> the generic type
  */
 public interface TypedSupplier<T> extends Supplier<T>, TypedReference<T> {

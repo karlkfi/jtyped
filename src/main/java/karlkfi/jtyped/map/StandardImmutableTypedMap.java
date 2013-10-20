@@ -17,6 +17,8 @@ package karlkfi.jtyped.map;
 
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import karlkfi.jtyped.TypedSupplier;
 
 import com.google.common.collect.ImmutableMap;
@@ -26,9 +28,10 @@ import com.google.common.collect.ImmutableMap;
  * 
  * @param <ID> the key ID type
  */
+@ThreadSafe
 final class StandardImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 
-	private ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate;
+	private ImmutableMap<ID, TypedSupplier<Object>> delegate;
 
 	/**
 	 * Constructs a new ImmutableTypedMap with the same mappings as the specified Map. If <code>m</code> is an
@@ -36,12 +39,9 @@ final class StandardImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 	 * 
 	 * @param m the m
 	 */
+	@SuppressWarnings("unchecked")
 	StandardImmutableTypedMap(Map<? extends ID, ? extends TypedSupplier<?>> m) {
-		if (m instanceof ImmutableMap) {
-			this.delegate = (ImmutableMap<? extends ID, ? extends TypedSupplier<?>>) m;
-		} else {
-			this.delegate = ImmutableMap.copyOf(m);
-		}
+		this.delegate = ImmutableMap.copyOf((Map<ID, TypedSupplier<Object>>) m);
 	}
 
 	/**
@@ -50,7 +50,7 @@ final class StandardImmutableTypedMap<ID> extends ImmutableTypedMap<ID> {
 	 * @return the immutable map that this typed map delegates to
 	 */
 	@Override
-	protected ImmutableMap<? extends ID, ? extends TypedSupplier<?>> delegate() {
+	protected ImmutableMap<ID, TypedSupplier<Object>> delegate() {
 		return delegate;
 	}
 

@@ -21,32 +21,32 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
 
-import karlkfi.jtyped.ImmutableTypedSupplier;
+import karlkfi.jtyped.MutableTypedSupplier;
 import karlkfi.jtyped.TypeTokens;
 import karlkfi.jtyped.TypedSupplier;
-import karlkfi.jtyped.TypedSuppliers;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.reflect.TypeToken;
 
 /**
  * TypedMap that is backed by a {@link HashMap} with TypedSupplier values.
  * 
- * This implementation hopefully provides all of the friendliness of an ImmutableMap, despite the added complexity of a
- * TypedMap. 
- * 
- * Because values are stored as {@link TypedSupplier}s they can be memoized for cached performance.
+ * Because it is backed by a HashMap, it is NOT thread-safe.
  * 
  * @param <ID> the key ID type
  */
-public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
+@NotThreadSafe
+public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> implements MutableTypedMap<ID> {
 
 	/**
 	 * Returns the empty typed map.
 	 */
 	public static <I> SuppliedTypedMap<I> of() {
-		return new StandardSuppliedTypedMap<I>(new HashMap<I, TypedSupplier<?>>());
+		return new StandardSuppliedTypedMap<I>(HashMaps.<I, TypedSupplier<?>>of());
 	}
 
 	/**
@@ -109,7 +109,7 @@ public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
 			@Nonnull I id1, @Nonnull Object v1) {
 		Preconditions.checkNotNull(id1, "id1 is null");
 		return new StandardSuppliedTypedMap<I>(HashMaps.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1)));
+				id1, MutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1)));
 	}
 
 	/**
@@ -123,8 +123,8 @@ public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id1, "id1 is null");
 		Preconditions.checkNotNull(id2, "id2 is null");
 		return new StandardSuppliedTypedMap<I>(HashMaps.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2)));
+				id1, MutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, MutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2)));
 	}
 
 	/**
@@ -140,9 +140,9 @@ public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id2, "id2 is null");
 		Preconditions.checkNotNull(id3, "id3 is null");
 		return new StandardSuppliedTypedMap<I>(HashMaps.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2),
-				id3, TypedSuppliers.nonnull(TypeTokens.raw(v3), v3)));
+				id1, MutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, MutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2),
+				id3, MutableTypedSupplier.nonnull(TypeTokens.raw(v3), v3)));
 	}
 
 	/**
@@ -160,10 +160,10 @@ public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id3, "id3 is null");
 		Preconditions.checkNotNull(id4, "id4 is null");
 		return new StandardSuppliedTypedMap<I>(HashMaps.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2),
-				id3, TypedSuppliers.nonnull(TypeTokens.raw(v3), v3),
-				id4, TypedSuppliers.nonnull(TypeTokens.raw(v4), v4)));
+				id1, MutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, MutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2),
+				id3, MutableTypedSupplier.nonnull(TypeTokens.raw(v3), v3),
+				id4, MutableTypedSupplier.nonnull(TypeTokens.raw(v4), v4)));
 	}
 
 	/**
@@ -183,11 +183,11 @@ public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
 		Preconditions.checkNotNull(id4, "id4 is null");
 		Preconditions.checkNotNull(id5, "id5 is null");
 		return new StandardSuppliedTypedMap<I>(HashMaps.of(
-				id1, TypedSuppliers.nonnull(TypeTokens.raw(v1), v1),
-				id2, TypedSuppliers.nonnull(TypeTokens.raw(v2), v2),
-				id3, TypedSuppliers.nonnull(TypeTokens.raw(v3), v3),
-				id4, TypedSuppliers.nonnull(TypeTokens.raw(v4), v4),
-				id5, TypedSuppliers.nonnull(TypeTokens.raw(v5), v5)));
+				id1, MutableTypedSupplier.nonnull(TypeTokens.raw(v1), v1),
+				id2, MutableTypedSupplier.nonnull(TypeTokens.raw(v2), v2),
+				id3, MutableTypedSupplier.nonnull(TypeTokens.raw(v3), v3),
+				id4, MutableTypedSupplier.nonnull(TypeTokens.raw(v4), v4),
+				id5, MutableTypedSupplier.nonnull(TypeTokens.raw(v5), v5)));
 	}
 
 	/**
@@ -234,7 +234,7 @@ public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
 		 * Recommended for raw value types only!
 		 */
 		public Builder<K> putRaw(K id, Object value) throws IllegalArgumentException {
-			builder.put(id, ImmutableTypedSupplier.of(TypeTokens.raw(value), value));
+			builder.put(id, MutableTypedSupplier.of(TypeTokens.raw(value), value));
 			return this;
 		}
 
@@ -270,7 +270,169 @@ public abstract class SuppliedTypedMap<ID> extends AbstractTypedMap<ID> {
 				return new StandardSuppliedTypedMap<I>(m);
 			}
 		}
+		
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	public <TT> void setType(@Nonnull TypedKey<TT, ? extends ID> typedKey) throws NullPointerException, ClassCastException {
+		Map<ID, TypedSupplier<Object>> delegate = delegate();
+		TypedSupplier<?> oldValueSupplier = delegate.get(typedKey.getId());
+		if (oldValueSupplier == null) {
+			//supplier is missing, replace it with a mutable one
+			@SuppressWarnings("unchecked")
+			TypeToken<Object> type = (TypeToken<Object>) typedKey.getType();
+			delegate.put(typedKey.getId(), MutableTypedSupplier.of(type, null));
+			//TODO: do we care that we may have lost some intermediate TypedSupplier populated by an unsynchronized put call?
+		}
+		
+		checkValueType(typedKey.getType(), oldValueSupplier);
+	}
+		
+	/** {@inheritDoc} */
+	@Override
+	@Nullable
+	public <TT> TT put(@Nonnull TypedKey<TT, ? extends ID> typedKey, @Nonnull TT value) throws NullPointerException, ClassCastException, ImmutableEntryException {
+		Map<ID, TypedSupplier<Object>> delegate = delegate();
+		TypedSupplier<?> oldValueSupplier = delegate.get(typedKey.getId());
+		if (oldValueSupplier == null) {
+			//supplier is missing, replace it with a mutable one
+			@SuppressWarnings("unchecked")
+			TypeToken<Object> type = (TypeToken<Object>) typedKey.getType();
+			delegate.put(typedKey.getId(), MutableTypedSupplier.of(type, value));
+			//TODO: do we care that we may have lost some intermediate TypedSupplier populated by an unsynchronized put call?
+			return null;
+		}
+		
+		TypedSupplier<TT> typedSupplier = checkValueType(typedKey.getType(), oldValueSupplier);
+		
+		if (oldValueSupplier instanceof MutableTypedSupplier) {
+			// if supplier is mutable, update it
+			MutableTypedSupplier<TT> supplier = (MutableTypedSupplier<TT>) typedSupplier;
+			supplier.set(value);
+			//TODO: do we care that some unsynchronized put call may have replaced this supplier?
+		} else {
+			//supplier is immutable, can't update it
+			throw new ImmutableEntryException("Entry is immutable for the key: " + typedKey);
+		}
+		
+		return typedSupplier.get();
+	}
+	
+	/** {@inheritDoc} */
+	@Override
+	@Nullable
+	public void putAll(@Nonnull TypedMap<? extends ID> m) throws NullPointerException, IllegalArgumentException, ClassCastException {
+		//TODO: validate that we CAN update before trying? or revert transaction?
+		Map<ID, TypedSupplier<Object>> delegate = delegate();
+		for (Entry<? extends TypedKey<Object, ? extends ID>, Object> entry : m.entries()) {
+			TypedKey<Object, ? extends ID> typedKey = entry.getKey();
+			TypeToken<Object> type = typedKey.getType();
+			Object value = entry.getValue();
+			
+			TypedSupplier<?> oldValueSupplier = delegate.get(typedKey.getId());
+			if (oldValueSupplier == null) {
+				//supplier is missing, replace it with a mutable one
+				delegate.put(typedKey.getId(), MutableTypedSupplier.of(type, value));
+				//TODO: do we care that we may have lost some intermediate TypedSupplier populated by an unsynchronized put call?
+			}
+			
+			TypedSupplier<Object> typedSupplier = checkValueType(type, oldValueSupplier);
+			
+			if (oldValueSupplier instanceof MutableTypedSupplier) {
+				// if supplier is mutable, update it
+				MutableTypedSupplier<Object> supplier = (MutableTypedSupplier<Object>) typedSupplier;
+				supplier.set(value);
+				//TODO: do we care that some unsynchronized put call may have replaced this supplier?
+			} else {
+				//supplier is immutable, can't update it
+				throw new ImmutableEntryException("Entry is immutable for the key: " + typedKey);
+			}
+		}
+	}
 
+	/** {@inheritDoc} */
+	@Override
+	@Nullable
+	public<TT> TT remove(@Nonnull TypedKey<TT, ? extends ID> typedKey) throws NullPointerException, EntryNotFoundException, ClassCastException, ImmutableEntryException {
+		TypedSupplier<?> oldValueSupplier = delegate().get(typedKey.getId());
+		if (oldValueSupplier == null) {
+			throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
+		}
+		
+		TypedSupplier<TT> typedSupplier = checkValueType(typedKey.getType(), oldValueSupplier);
+		
+		if (typedSupplier instanceof MutableTypedSupplier) {
+			// if supplier is mutable, update it
+			MutableTypedSupplier<TT> supplier = (MutableTypedSupplier<TT>) typedSupplier;
+			supplier.set(null);
+		} else {
+			//supplier is immutable, can't update it
+			throw new ImmutableEntryException("Entry is immutable for the key: " + typedKey);
+		}
+		
+		return typedSupplier.get();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@Nullable
+	public <TT> TT remove(@Nonnull Class<TT> valueType, @Nonnull ID keyId) throws NullPointerException, ClassCastException, ImmutableEntryException {
+		TypedSupplier<?> oldValueSupplier = delegate().get(keyId);
+		if (oldValueSupplier == null) {
+			throw new EntryNotFoundException("Value does not exist for the key ID: " + keyId);
+		}
+		
+		TypedSupplier<TT> typedSupplier = checkValueType(TypeToken.of(valueType), oldValueSupplier);
+		
+		if (typedSupplier instanceof MutableTypedSupplier) {
+			// if supplier is mutable, update it
+			MutableTypedSupplier<TT> supplier = (MutableTypedSupplier<TT>) typedSupplier;
+			supplier.set(null);
+		} else {
+			//supplier is immutable, can't update it
+			throw new ImmutableEntryException("Entry is immutable for the key ID: " + keyId);
+		}
+		
+		return typedSupplier.get();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	@Nullable
+	public Object remove(@Nonnull ID keyId) throws NullPointerException, ClassCastException, ImmutableEntryException {
+		TypedSupplier<?> oldValueSupplier = delegate().get(keyId);
+		if (oldValueSupplier == null) {
+			throw new EntryNotFoundException("Value does not exist for the key ID: " + keyId);
+		}
+		
+		if (oldValueSupplier instanceof MutableTypedSupplier) {
+			// if supplier is mutable, update it
+			MutableTypedSupplier<?> supplier = (MutableTypedSupplier<?>) oldValueSupplier;
+			supplier.set(null);
+		} else {
+			//supplier is immutable, can't update it
+			throw new ImmutableEntryException("Entry is immutable for the key ID: " + keyId);
+		}
+		
+		return oldValueSupplier.get();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public void clear() {
+		//TODO: validate that we CAN clear before trying? or revert transaction?
+		for (Entry<ID, TypedSupplier<Object>> entry : delegate().entrySet()) {
+			TypedSupplier<?> valueSupplier = entry.getValue();
+			if (valueSupplier instanceof MutableTypedSupplier) {
+				// if supplier is mutable, update it
+				MutableTypedSupplier<?> supplier = (MutableTypedSupplier<?>) valueSupplier;
+				supplier.set(null);
+			} else {
+				//supplier is immutable, can't update it
+				throw new ImmutableEntryException("Entry is immutable for the key ID: " + entry.getKey());
+			}
+		}
 	}
 
 }

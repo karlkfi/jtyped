@@ -41,13 +41,13 @@ import com.google.common.reflect.TypeToken;
  * @param <ID> the key ID type
  */
 public abstract class AbstractTypedMap<ID> implements TypedMap<ID> {
-
+	
 	/**
-	 * Delegate accessor (read-only).
+	 * Delegate accessor for production AND consumption methods (like getters & setters).
 	 * 
 	 * @return the immutable map that this typed map delegates to
 	 */
-	protected abstract Map<? extends ID, ? extends TypedSupplier<?>> delegate();
+	protected abstract Map<ID, TypedSupplier<Object>> delegate();
 
 	/**
 	 * @return the number of entries in this typed map (up to Integer.MAX_VALUE)
@@ -81,26 +81,45 @@ public abstract class AbstractTypedMap<ID> implements TypedMap<ID> {
 		TypedSupplier<?> valueSupplier = delegate().get(id);
 		return valueSupplier != null;
 	}
-
+	
 	/** {@inheritDoc} */
-	@Nonnull
-	public <T> T get(@Nonnull TypedKey<T, ? extends ID> typedKey) throws EntryNotFoundException, ClassCastException {
+	public <TT> void checkType(@Nonnull TypedKey<TT, ? extends ID> typedKey) throws NullPointerException, EntryNotFoundException, ClassCastException {
 		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
 		if (valueSupplier == null) {
 			throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
 		}
-		TypedSupplier<T> typedSupplier = checkValueType(typedKey.getType(), valueSupplier);
+		checkValueType(typedKey.getType(), valueSupplier);
+	}
+	
+	@Nonnull
+	public static <TT> TypedSupplier<TT> checkValueType(@Nonnull TypeToken<TT> type, @Nonnull TypedSupplier<?> valueSupplier) throws ClassCastException {
+		if (!type.isAssignableFrom(valueSupplier.getType())) {
+			throw new ClassCastException("Key type is not assignable from the existing value type.");
+		}
+		@SuppressWarnings("unchecked")
+		TypedSupplier<TT> typedSupplier = (TypedSupplier<TT>) valueSupplier;
+		return typedSupplier;
+	}
+
+	/** {@inheritDoc} */
+	@Nonnull
+	public <TT> TT get(@Nonnull TypedKey<TT, ? extends ID> typedKey) throws EntryNotFoundException, ClassCastException {
+		TypedSupplier<?> valueSupplier = delegate().get(typedKey.getId());
+		if (valueSupplier == null) {
+			throw new EntryNotFoundException("Value does not exist for the key: " + typedKey);
+		}
+		TypedSupplier<TT> typedSupplier = checkValueType(typedKey.getType(), valueSupplier);
 		return typedSupplier.get();
 	}
 	
 	/** {@inheritDoc} */
 	@Nonnull
-	public <T> T get(@Nonnull Class<T> valueType, ID keyId) throws EntryNotFoundException, ClassCastException {
+	public <TT> TT get(@Nonnull Class<TT> valueType, ID keyId) throws EntryNotFoundException, ClassCastException {
 		TypedSupplier<?> valueSupplier = delegate().get(keyId);
 		if (valueSupplier == null) {
 			throw new EntryNotFoundException("Value does not exist for the id: " + keyId);
 		}
-		TypedSupplier<T> typedSupplier = checkValueType(TypeToken.of(valueType), valueSupplier);
+		TypedSupplier<TT> typedSupplier = checkValueType(TypeToken.of(valueType), valueSupplier);
 		return typedSupplier.get();
 	}
 	
@@ -114,7 +133,7 @@ public abstract class AbstractTypedMap<ID> implements TypedMap<ID> {
 		return valueSupplier.get();
 	}
 	
-	private transient Set<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> entrySet;
+	private transient Set<Entry<TypedKey<Object, ID>, Object>> entrySet;
 
 	/**
 	 * Gets the immutable set of all typed key value pairs.
@@ -123,25 +142,26 @@ public abstract class AbstractTypedMap<ID> implements TypedMap<ID> {
 	 * @return the immutable set of typed key value pairs
 	 */
 	@Nonnull
-	public Set<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> entries() {
-		Set<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> result = entrySet;
+	public Set<Entry<TypedKey<Object, ID>, Object>> entries() {
+		Set<Entry<TypedKey<Object, ID>, Object>> result = entrySet;
 		return (result == null) ? entrySet = createEntrySet() : result;
 	}
 	
 	@Nonnull
-	Set<? extends Entry<? extends TypedKey<?, ? extends ID>, ?>> createEntrySet() {
+	ImmutableSet<Entry<TypedKey<Object, ID>, Object>> createEntrySet() {
 		//based on the cachable entrySupplierSet
 		return ImmutableSet.copyOf(Collections2.transform(entrySuppliers(), new EntryToKeyedEntryTransform()));
 	}
 	
-	class EntryToKeyedEntryTransform implements Function<Entry<? extends ID, ? extends TypedSupplier<?>>, Entry<? extends TypedKey<?, ? extends ID>, ?>> {
-		public Entry<? extends TypedKey<?, ? extends ID>, ?> apply(Entry<? extends ID, ? extends TypedSupplier<?>> input) {
-			TypedSupplier<?> valueSupplier = input.getValue();
-			return Maps.immutableEntry(ImmutableTypedKey.of(valueSupplier.getType(), input.getKey()), valueSupplier.get());
+	class EntryToKeyedEntryTransform implements Function<Entry<? extends ID, ? extends TypedSupplier<?>>, Entry<TypedKey<Object, ID>, Object>> {
+		public Entry<TypedKey<Object, ID>, Object> apply(Entry<? extends ID, ? extends TypedSupplier<?>> input) {
+			@SuppressWarnings("unchecked")
+			TypedSupplier<Object> valueSupplier = (TypedSupplier<Object>) input.getValue();
+			return Maps.immutableEntry((TypedKey<Object, ID>) ImmutableTypedKey.of(valueSupplier.getType(), (ID) input.getKey()), valueSupplier.get());
 		}
 	};
 	
-	private transient Set<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> entrySupplierSet;
+	private transient Set<Entry<ID, TypedSupplier<Object>>> entrySupplierSet;
 
 	/**
 	 * Returns an immutable set of the mappings in this map. The entries are in the same order as the parameters used to
@@ -149,17 +169,17 @@ public abstract class AbstractTypedMap<ID> implements TypedMap<ID> {
 	 * TODO: should this be exposed?
 	 */
 	@Nonnull
-	Set<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> entrySuppliers() {
-		Set<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> result = entrySupplierSet;
+	Set<Entry<ID, TypedSupplier<Object>>> entrySuppliers() {
+		Set<Entry<ID, TypedSupplier<Object>>> result = entrySupplierSet;
 		return (result == null) ? entrySupplierSet = createEntrySupplierSet() : result;
 	}
 
 	@Nonnull
-	Set<? extends Entry<? extends ID, ? extends TypedSupplier<?>>> createEntrySupplierSet() {
+	Set<Entry<ID, TypedSupplier<Object>>> createEntrySupplierSet() {
 		return delegate().entrySet();
 	}
 
-	private transient Set<? extends TypedKey<?, ? extends ID>> typedKeySet;
+	private transient Set<TypedKey<Object, ID>> typedKeySet;
 
 	/**
 	 * Gets the immutable set of typed keys that have corresponding values in this map.
@@ -168,33 +188,24 @@ public abstract class AbstractTypedMap<ID> implements TypedMap<ID> {
 	 * @return the immutable set of typed keys that have corresponding values in this map
 	 */
 	@Nonnull
-	public Set<? extends TypedKey<?, ? extends ID>> keys() {
-		Set<? extends TypedKey<?, ? extends ID>> result = typedKeySet;
+	public Set<TypedKey<Object, ID>> keys() {
+		Set<TypedKey<Object, ID>> result = typedKeySet;
 		return (result == null) ? typedKeySet = createKeySet() : result;
 	}
 
 	@Nonnull
-	Set<? extends TypedKey<?, ? extends ID>> createKeySet() {
+	ImmutableSet<TypedKey<Object, ID>> createKeySet() {
 		//based on the cachable entrySupplierSet
 		return ImmutableSet.copyOf(Collections2.transform(entrySuppliers(), new EntryToTypedKeyTransform()));
 	}
 
-	class EntryToTypedKeyTransform implements Function<Entry<? extends ID, ? extends TypedSupplier<?>>, TypedKey<?, ID>> {
-		public TypedKey<?, ID> apply(Entry<? extends ID, ? extends TypedSupplier<?>> input) {
-			return ImmutableTypedKey.of(input.getValue().getType(), (ID) input.getKey());
+	class EntryToTypedKeyTransform implements Function<Entry<? extends ID, ? extends TypedSupplier<?>>, TypedKey<Object, ID>> {
+		public TypedKey<Object, ID> apply(Entry<? extends ID, ? extends TypedSupplier<?>> input) {
+			@SuppressWarnings("unchecked")
+			TypedSupplier<Object> valueSupplier = (TypedSupplier<Object>) input.getValue();
+			return ImmutableTypedKey.of(valueSupplier.getType(), (ID) input.getKey());
 		}
 	};
-
-	@Nonnull
-	static <TT> TypedSupplier<TT> checkValueType(@Nonnull TypeToken<TT> type, @Nonnull TypedSupplier<?> valueSupplier)
-			throws ClassCastException {
-		if (!type.isAssignableFrom(valueSupplier.getType())) {
-			throw new ClassCastException("Key type is not assignable from the existing value type.");
-		}
-		@SuppressWarnings("unchecked")
-		TypedSupplier<TT> typedSupplier = (TypedSupplier<TT>) valueSupplier;
-		return typedSupplier;
-	}
 
 	@Override
 	public boolean equals(@Nullable Object object) {
